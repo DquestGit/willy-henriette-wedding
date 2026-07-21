@@ -1,7 +1,20 @@
 const opening = document.querySelector('#opening');
 const openButton = document.querySelector('#openInvitation');
 const main = document.querySelector('#mainContent');
+const weddingMusic = document.querySelector('#weddingMusic');
+const musicToggle = document.querySelector('#musicToggle');
 let currentLanguage = 'fr';
+
+function updateMusicButton() {
+  const playing = !weddingMusic.paused;
+  musicToggle.setAttribute('aria-pressed', String(playing));
+  musicToggle.querySelector('.music-label').textContent = currentLanguage === 'fr'
+    ? (playing ? 'Pause' : 'Musique')
+    : (playing ? 'Pause' : 'Music');
+  musicToggle.setAttribute('aria-label', currentLanguage === 'fr'
+    ? (playing ? 'Mettre la musique en pause' : 'Activer la musique')
+    : (playing ? 'Pause music' : 'Play music'));
+}
 
 const translations = [
   ['.seal-prompt', 'Open the invitation', 'Ouvrir l’invitation'],
@@ -54,6 +67,7 @@ function setLanguage(language) {
   openButton.setAttribute('aria-label', language === 'fr' ? 'Ouvrir l’invitation de Willy et Henriette' : 'Open Willy and Henriette’s invitation');
   document.querySelector('.language-switch').setAttribute('aria-label', language === 'fr' ? 'Choisir la langue' : 'Choose language');
   document.querySelectorAll('[data-language]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.language === language)));
+  updateMusicButton();
   const bankButton = document.querySelector('#showBank');
   bankButton.textContent = bankButton.getAttribute('aria-expanded') === 'true'
     ? (language === 'fr' ? 'Masquer les coordonnées bancaires' : 'Hide bank details')
@@ -64,6 +78,7 @@ document.querySelectorAll('[data-language]').forEach(button => button.addEventLi
 setLanguage('fr');
 
 openButton.addEventListener('click', () => {
+  weddingMusic.play().then(updateMusicButton).catch(updateMusicButton);
   opening.classList.add('opened');
   opening.setAttribute('aria-hidden', 'true');
   main.setAttribute('aria-hidden', 'false');
@@ -71,6 +86,14 @@ openButton.addEventListener('click', () => {
   document.querySelector('.hero .reveal').classList.add('visible');
   setTimeout(() => opening.remove(), 1100);
 });
+
+musicToggle.addEventListener('click', () => {
+  if (weddingMusic.paused) weddingMusic.play().then(updateMusicButton).catch(updateMusicButton);
+  else { weddingMusic.pause(); updateMusicButton(); }
+});
+
+weddingMusic.addEventListener('play', updateMusicButton);
+weddingMusic.addEventListener('pause', updateMusicButton);
 
 const observer = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
