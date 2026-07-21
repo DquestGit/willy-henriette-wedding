@@ -1,7 +1,100 @@
 const opening = document.querySelector('#opening');
 const openButton = document.querySelector('#openInvitation');
 const main = document.querySelector('#mainContent');
+const musicToggle = document.querySelector('#musicToggle');
 let currentLanguage = 'fr';
+let audioContext;
+let musicTimer;
+let musicPlaying = false;
+let nextBarTime = 0;
+let barIndex = 0;
+
+const note = name => {
+  const tones = { C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196, A3:220, B3:246.94, C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392, A4:440, B4:493.88, C5:523.25, D5:587.33, E5:659.25 };
+  return tones[name];
+};
+
+function pluck(frequency, time, volume = 0.055) {
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = 'triangle';
+  oscillator.frequency.setValueAtTime(frequency, time);
+  gain.gain.setValueAtTime(0.0001, time);
+  gain.gain.exponentialRampToValueAtTime(volume, time + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.34);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start(time); oscillator.stop(time + 0.36);
+}
+
+function bass(frequency, time) {
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = 'sine'; oscillator.frequency.value = frequency;
+  gain.gain.setValueAtTime(0.0001, time);
+  gain.gain.exponentialRampToValueAtTime(0.07, time + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.38);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start(time); oscillator.stop(time + 0.4);
+}
+
+function drum(time, high = false) {
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = high ? 'triangle' : 'sine';
+  oscillator.frequency.setValueAtTime(high ? 190 : 105, time);
+  oscillator.frequency.exponentialRampToValueAtTime(high ? 95 : 48, time + 0.12);
+  gain.gain.setValueAtTime(high ? 0.035 : 0.09, time);
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.16);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start(time); oscillator.stop(time + 0.18);
+}
+
+function scheduleBar(start, index) {
+  const beat = 60 / 112;
+  const chords = [
+    { bass:'C3', notes:['E4','G4','C5','G4','E5','C5','G4','E4'] },
+    { bass:'F3', notes:['F4','A4','C5','A4','F5','C5','A4','F4'] },
+    { bass:'G3', notes:['G4','B4','D5','B4','G4','D5','B4','G4'] },
+    { bass:'C3', notes:['E4','G4','C5','D5','E5','D5','C5','G4'] }
+  ];
+  const chord = chords[index % chords.length];
+  chord.notes.forEach((name, step) => pluck(note(name), start + step * beat / 2, step % 2 ? 0.045 : 0.06));
+  [0, 2].forEach(step => bass(note(chord.bass), start + step * beat));
+  for (let step = 0; step < 8; step += 1) {
+    if (step % 2 === 0) drum(start + step * beat / 2, false);
+    drum(start + step * beat / 2 + beat / 4, true);
+  }
+}
+
+function queueMusic() {
+  while (nextBarTime < audioContext.currentTime + 1.5) {
+    scheduleBar(nextBarTime, barIndex++);
+    nextBarTime += (60 / 112) * 4;
+  }
+}
+
+async function startMusic() {
+  if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  await audioContext.resume();
+  if (musicPlaying) return;
+  musicPlaying = true; nextBarTime = audioContext.currentTime + 0.08;
+  queueMusic(); musicTimer = window.setInterval(queueMusic, 500);
+  musicToggle.setAttribute('aria-pressed', 'true');
+  updateMusicButton();
+}
+
+function stopMusic() {
+  musicPlaying = false; window.clearInterval(musicTimer);
+  if (audioContext) audioContext.suspend();
+  musicToggle.setAttribute('aria-pressed', 'false');
+  updateMusicButton();
+}
+
+function updateMusicButton() {
+  const label = musicToggle.querySelector('.music-label');
+  label.textContent = currentLanguage === 'fr' ? (musicPlaying ? 'Pause' : 'Musique') : (musicPlaying ? 'Pause' : 'Music');
+  musicToggle.setAttribute('aria-label', currentLanguage === 'fr' ? (musicPlaying ? 'Mettre la musique en pause' : 'Activer la musique') : (musicPlaying ? 'Pause music' : 'Play music'));
+}
 
 const translations = [
   ['.seal-prompt', 'Open the invitation', 'Ouvrir l’invitation'],
@@ -54,6 +147,7 @@ function setLanguage(language) {
   openButton.setAttribute('aria-label', language === 'fr' ? 'Ouvrir l’invitation de Willy et Henriette' : 'Open Willy and Henriette’s invitation');
   document.querySelector('.language-switch').setAttribute('aria-label', language === 'fr' ? 'Choisir la langue' : 'Choose language');
   document.querySelectorAll('[data-language]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.language === language)));
+  updateMusicButton();
   const bankButton = document.querySelector('#showBank');
   bankButton.textContent = bankButton.getAttribute('aria-expanded') === 'true'
     ? (language === 'fr' ? 'Masquer les coordonnées bancaires' : 'Hide bank details')
@@ -64,6 +158,7 @@ document.querySelectorAll('[data-language]').forEach(button => button.addEventLi
 setLanguage('fr');
 
 openButton.addEventListener('click', () => {
+  startMusic().catch(() => updateMusicButton());
   opening.classList.add('opened');
   opening.setAttribute('aria-hidden', 'true');
   main.setAttribute('aria-hidden', 'false');
@@ -71,6 +166,8 @@ openButton.addEventListener('click', () => {
   document.querySelector('.hero .reveal').classList.add('visible');
   setTimeout(() => opening.remove(), 1100);
 });
+
+musicToggle.addEventListener('click', () => musicPlaying ? stopMusic() : startMusic());
 
 const observer = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
