@@ -18,7 +18,6 @@ function updateMusicButton() {
 
 const translations = [
   ['.seal-prompt', 'Open the invitation', 'Ouvrir l’invitation'],
-  ['.hero .eyebrow', 'Our wedding blessing', 'Notre bénédiction nuptiale'],
   ['.hero-date', 'Saturday, 8 August 2026', 'Samedi 8 août 2026'],
   ['.hero-place', 'Brussels', 'Bruxelles'],
   ['.hero .button', 'Discover our invitation', 'Découvrir notre invitation'],
@@ -53,6 +52,8 @@ function setLanguage(language) {
     const element = document.querySelector(selector);
     if (element) element.childNodes[0].textContent = language === 'fr' ? fr : en;
   });
+  document.querySelector('.hero-eyebrow-line1').textContent = language === 'fr' ? 'Notre' : 'Our wedding';
+  document.querySelector('.hero-eyebrow-line2').textContent = language === 'fr' ? ' bénédiction nuptiale' : ' blessing';
   const cards = document.querySelectorAll('.event-card');
   const ceremony = cards[0];
   const reception = cards[1];

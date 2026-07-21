@@ -11,3 +11,4 @@
 .gift-section{color:var(--navy);background:linear-gradient(#dcebf1d6,#dcebf1e0),url("assets/real-floral-background.png") center/cover fixed}.gift-section h2{color:var(--navy)}.gift-section p:not(.eyebrow){color:var(--navy)}.gift-section .button-light{color:var(--navy);border-color:var(--navy);background:#ffffff55}.gift-section .button-light:hover,.gift-section .button-light:focus-visible{background:var(--navy);color:#fff}.gift-section .bank-details{background:#f8fbfccc;border-color:#52738788;color:var(--navy)}.gift-section .copy-button{color:var(--navy);border-color:var(--navy)}
 .hero{background-image:url("assets/real-floral-background-light-blue.png")}
 .gift-section{background-image:linear-gradient(#dcebf14d,#dcebf15c),url("assets/real-floral-background-light-blue.png")}
+@media(max-width:600px){.hero .eyebrow span{display:block}.hero .eyebrow .hero-eyebrow-line2{margin-top:4px}}
