@@ -42,6 +42,7 @@ const translations = [
   ['.bank-details p:nth-of-type(2) span', 'ING account', 'Compte ING'],
   ['.bank-details p:nth-of-type(3) span', 'Reference', 'Communication'],
   ['#copyIban', 'Copy IBAN', 'Copier l’IBAN'],
+  ['.adults-only', 'For organisational reasons, we have chosen to hold an adults-only reception.', "Pour des raisons d'organisation nous avons choisi une réception sans enfants."],
   ['footer .eyebrow', 'We look forward to sharing this wonderful day with you', 'Au plaisir de partager cette merveilleuse journée avec vous']
 ];
 
