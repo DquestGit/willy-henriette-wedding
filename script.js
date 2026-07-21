@@ -42,6 +42,7 @@ const translations = [
   ['.bank-details p:nth-of-type(2) span', 'ING account', 'Compte ING'],
   ['.bank-details p:nth-of-type(3) span', 'Reference', 'Communication'],
   ['#copyIban', 'Copy IBAN', 'Copier l’IBAN'],
+  ['.adults-only', 'For one evening, we invite you to simply be yourselves again, without the children!', 'Le temps d’une soirée, on vous invite à redevenir juste vous, sans les enfants !'],
   ['footer .eyebrow', 'We look forward to sharing this wonderful day with you', 'Au plaisir de partager cette merveilleuse journée avec vous']
 ];
 
@@ -57,6 +58,7 @@ function setLanguage(language) {
   const cards = document.querySelectorAll('.event-card');
   const ceremony = cards[0];
   const reception = cards[1];
+  const ending = cards[2];
   ceremony.querySelector('time').textContent = language === 'fr' ? '12h45' : '12:45 PM';
   ceremony.querySelector('.event-kicker').textContent = language === 'fr' ? 'Bénédiction nuptiale' : 'Wedding blessing';
   ceremony.querySelector('h3').textContent = language === 'fr' ? 'Église Néo-Apostolique de Belgique' : 'New Apostolic Church of Belgium';
@@ -64,6 +66,8 @@ function setLanguage(language) {
   reception.querySelector('time').textContent = language === 'fr' ? '17h30' : '5:30 PM';
   reception.querySelector('.event-kicker').textContent = language === 'fr' ? 'Cocktail · Dîner · Soirée dansante' : 'Cocktail · Dinner · Dancing';
   reception.querySelector('address').innerHTML = language === 'fr' ? '36, rue des Bassins<br>1070 Bruxelles' : '36 Rue des Bassins<br>1070 Brussels';
+  ending.querySelector('time').textContent = language === 'fr' ? '2h30' : '2:30 AM';
+  ending.querySelector('.event-kicker').textContent = language === 'fr' ? 'Fin de soirée' : 'End of the celebration';
   document.querySelectorAll('.text-link').forEach(link => link.childNodes[0].textContent = language === 'fr' ? 'Voir l’itinéraire ' : 'Get directions ');
   openButton.setAttribute('aria-label', language === 'fr' ? 'Ouvrir l’invitation de Willy et Henriette' : 'Open Willy and Henriette’s invitation');
   document.querySelector('.language-switch').setAttribute('aria-label', language === 'fr' ? 'Choisir la langue' : 'Choose language');
