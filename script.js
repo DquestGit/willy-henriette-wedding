@@ -62,7 +62,7 @@ function setLanguage(language) {
   ceremony.querySelector('time').textContent = language === 'fr' ? '12h45' : '12:45 PM';
   ceremony.querySelector('.event-kicker').textContent = language === 'fr' ? 'Bénédiction nuptiale' : 'Wedding blessing';
   ceremony.querySelector('h3').textContent = language === 'fr' ? 'Église Néo-Apostolique de Belgique' : 'New Apostolic Church of Belgium';
-  ceremony.querySelector('address').innerHTML = language === 'fr' ? '80, avenue Franz Guillaume<br>1070 Bruxelles' : '80 Avenue Franz Guillaume<br>1070 Brussels';
+  ceremony.querySelector('address').innerHTML = language === 'fr' ? '80, avenue Franz Guillaume<br>1140 Bruxelles' : '80 Avenue Franz Guillaume<br>1140 Brussels';
   reception.querySelector('time').textContent = language === 'fr' ? '17h30' : '5:30 PM';
   reception.querySelector('.event-kicker').textContent = language === 'fr' ? 'Cocktail · Dîner · Soirée dansante' : 'Cocktail · Dinner · Dancing';
   reception.querySelector('address').innerHTML = language === 'fr' ? '36, rue des Bassins<br>1070 Bruxelles' : '36 Rue des Bassins<br>1070 Brussels';
